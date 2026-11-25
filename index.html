@@ -36,23 +36,7 @@
   h1, .naglowek { font-family: "Space Grotesk", Inter, system-ui, sans-serif; text-wrap: balance; }
   .naglowek { margin: 20px 0 4px; font-size: 20px; }
   .opis { margin: 0 0 14px; color: var(--szary); font-size: 14px; }
-  .szukaj-siatka {
-    display: grid; gap: 12px;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-  .szukaj-karta {
-    background: var(--karta); border: 1px solid var(--linia); border-radius: 12px;
-    padding: 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
-  }
-  .szukaj-karta h3 { margin: 0; font-size: 16px; }
-  .portale { display: flex; flex-wrap: wrap; gap: 8px; }
-  .portal {
-    font-size: 14px; font-weight: 600; text-decoration: none;
-    padding: 7px 12px; border-radius: 8px;
-    border: 1px solid var(--akcent); color: var(--akcent);
-  }
-  .portal:hover { background: var(--akcent); color: var(--akcent-tekst); }
-  .portal:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+
   header { padding: 28px 0 8px; }
   h1 { margin: 0; font-size: 28px; }
   header p { margin: 4px 0 0; color: var(--szary); }
@@ -135,16 +119,11 @@
 <div class="srodek">
   <header>
     <h1>Okazje</h1>
-    <p>Licytacje komornicze, upadłości firm i dobre oferty z portali.</p>
+    <p>Upadłości firm i licytacje komornicze.</p>
   </header>
 
   <section class="filtry" id="filtry" aria-label="Filtry"></section>
   <main>
-    <h2 class="naglowek">Szukaj na portalach</h2>
-    <p class="opis">Przycisk otwiera portal z gotowym wyszukiwaniem dla danej kategorii.</p>
-    <div class="szukaj-siatka" id="szukaj"></div>
-
-    <h2 class="naglowek">Znalezione okazje</h2>
     <p class="opis" id="licznik" aria-live="polite"></p>
     <div class="siatka" id="siatka"></div>
   </main>
@@ -239,43 +218,8 @@
     return k;
   }
 
-  function linkiPortali(k) {
-    const fraza = encodeURIComponent(k.szukaj);
-    const linki = [];
-    if (k.komornik) linki.push(["Licytacje komornicze",
-      "https://licytacje.komornik.pl/wyszukiwarka-licytacji?mainCategory=MOVABLE&subCategory=" + k.komornik]);
-    linki.push(["OLX", "https://www.olx.pl/oferty/q-" + encodeURIComponent(k.szukaj.replace(/ +/g, "-")) + "/"]);
-    linki.push(["Allegro", "https://allegro.pl/listing?string=" + fraza]);
-    linki.push(["Allegro Lokalnie", "https://allegrolokalnie.pl/oferty/q/" + fraza]);
-    if (k.otomoto) linki.push(["Otomoto", k.otomoto]);
-    return linki;
-  }
-
-  function kartaSzukania(k) {
-    const karta = el("article", "szukaj-karta");
-    karta.append(el("h3", null, k.nazwa));
-    const portale = el("div", "portale");
-    linkiPortali(k).forEach(([nazwa, adres]) => {
-      const a = el("a", "portal", nazwa + " →");
-      a.href = adres; a.target = "_blank"; a.rel = "noopener noreferrer";
-      portale.append(a);
-    });
-    karta.append(portale);
-    return karta;
-  }
-
-  function rysujSzukanie() {
-    const kategorie = GRUPY.flatMap(g => g.kategorie).filter(k =>
-      (!stan.tylkoLatwe || k.latwa) && (!stan.kategoria || k.id === stan.kategoria)
-    );
-    const pole = document.getElementById("szukaj");
-    pole.replaceChildren(...kategorie.map(kartaSzukania));
-    if (!kategorie.length) pole.append(el("div", "pusto", "Ta kategoria nie jest oznaczona jako łatwa do sprzedania."));
-  }
-
   function rysuj() {
     rysujFiltry();
-    rysujSzukanie();
     const lista = OKAZJE.filter(o =>
       (!stan.tylkoLatwe || o.latwaSprzedaz) &&
       (!stan.kategoria || o.kategoria === stan.kategoria)
