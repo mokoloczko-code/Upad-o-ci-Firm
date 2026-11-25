@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Okazje</title>
+<style>
+  :root {
+    --tlo: #f4f5f7;
+    --karta: #ffffff;
+    --tekst: #15181d;
+    --szary: #6b7280;
+    --linia: #e2e5ea;
+    --akcent: #0f7a4d;
+    --akcent-tekst: #ffffff;
+    --zdjecie: #e6e9ee;
+    --plakietka: #fff3cd;
+    --plakietka-tekst: #7a5a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --tlo: #111418;
+      --karta: #1a1e24;
+      --tekst: #eef0f3;
+      --szary: #98a1ae;
+      --linia: #2b313a;
+      --akcent: #2fb57c;
+      --akcent-tekst: #06150e;
+      --zdjecie: #252b33;
+      --plakietka: #4a3c0a;
+      --plakietka-tekst: #ffe08a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--tlo);
+    color: var(--tekst);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .srodek { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 28px 0 8px; }
+  h1 { margin: 0; font-size: 28px; }
+  header p { margin: 4px 0 0; color: var(--szary); }
+
+  .filtry { padding: 16px 0 4px; }
+  .rzad { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .rzad-nazwa {
+    flex: 0 0 100%;
+    font-size: 12px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--szary);
+  }
+  .filtr {
+    font: inherit; font-size: 14px;
+    padding: 7px 14px;
+    border: 1px solid var(--linia);
+    border-radius: 999px;
+    background: var(--karta);
+    color: var(--tekst);
+    cursor: pointer;
+  }
+  .filtr:hover { border-color: var(--akcent); }
+  .filtr[aria-pressed="true"] {
+    background: var(--akcent); border-color: var(--akcent);
+    color: var(--akcent-tekst); font-weight: 600;
+  }
+  .filtr:focus-visible, .przycisk:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+
+  .licznik { color: var(--szary); font-size: 14px; margin: 8px 0 14px; }
+
+  .siatka {
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    padding-bottom: 48px;
+  }
+  .karta {
+    background: var(--karta);
+    border: 1px solid var(--linia);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .zdjecie {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: var(--zdjecie);
+    display: grid; place-items: center;
+    color: var(--szary); font-size: 13px; text-align: center; padding: 12px;
+  }
+  .zdjecie img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .znaczki { position: absolute; top: 8px; left: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .znaczek {
+    font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 6px;
+    background: var(--plakietka); color: var(--plakietka-tekst);
+  }
+  .znaczek.latwa { background: var(--akcent); color: var(--akcent-tekst); }
+  .tresc { padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .kategoria { font-size: 12px; color: var(--szary); }
+  .tytul { margin: 0; font-size: 16px; font-weight: 600; }
+  .ceny { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .cena { font-size: 22px; font-weight: 700; }
+  .cena-rynkowa { color: var(--szary); font-size: 14px; }
+  .taniej { font-size: 13px; font-weight: 700; color: var(--akcent); }
+  .skad { font-size: 13px; color: var(--szary); }
+  .przycisk {
+    margin-top: auto;
+    display: block; text-align: center; text-decoration: none;
+    padding: 10px 12px; border-radius: 8px;
+    background: var(--akcent); color: var(--akcent-tekst); font-weight: 600;
+  }
+  .przycisk:hover { filter: brightness(1.08); }
+  .pusto {
+    grid-column: 1 / -1; text-align: center; color: var(--szary);
+    padding: 48px 16px; border: 1px dashed var(--linia); border-radius: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="srodek">
+  <header>
+    <h1>Okazje</h1>
+    <p>Licytacje komornicze, upadłości firm i dobre oferty z portali.</p>
+  </header>
+
+  <section class="filtry" id="filtry" aria-label="Filtry"></section>
+  <div class="licznik" id="licznik" aria-live="polite"></div>
+  <main class="siatka" id="siatka"></main>
+</div>
+
+<script src="okazje.js"></script>
+<script>
+  const stan = { tylkoLatwe: false, kategoria: null };
+
+  const nazwyKategorii = {};
+  GRUPY.forEach(g => g.kategorie.forEach(k => { nazwyKategorii[k.id] = k.nazwa; }));
+
+  const zl = n => n.toLocaleString("pl-PL") + " zł";
+
+  function el(tag, klasa, tekst) {
+    const e = document.createElement(tag);
+    if (klasa) e.className = klasa;
+    if (tekst !== undefined) e.textContent = tekst;
+    return e;
+  }
+
+  function przyciskFiltra(tekst, wcisniety, klik) {
+    const b = el("button", "filtr", tekst);
+    b.type = "button";
+    b.setAttribute("aria-pressed", wcisniety);
+    b.addEventListener("click", klik);
+    return b;
+  }
+
+  function rysujFiltry() {
+    const f = document.getElementById("filtry");
+    f.replaceChildren();
+
+    const glowny = el("div", "rzad");
+    glowny.append(
+      przyciskFiltra("Wszystko", !stan.tylkoLatwe && !stan.kategoria, () => {
+        stan.tylkoLatwe = false; stan.kategoria = null; rysuj();
+      }),
+      przyciskFiltra("Łatwe do sprzedania", stan.tylkoLatwe, () => {
+        stan.tylkoLatwe = !stan.tylkoLatwe; rysuj();
+      })
+    );
+    f.append(glowny);
+
+    GRUPY.forEach(g => {
+      const rzad = el("div", "rzad");
+      rzad.append(el("div", "rzad-nazwa", g.nazwa));
+      g.kategorie.forEach(k => {
+        rzad.append(przyciskFiltra(k.nazwa, stan.kategoria === k.id, () => {
+          stan.kategoria = stan.kategoria === k.id ? null : k.id; rysuj();
+        }));
+      });
+      f.append(rzad);
+    });
+  }
+
+  function karta(o) {
+    const k = el("article", "karta");
+
+    const zdj = el("div", "zdjecie");
+    if (o.zdjecie) {
+      const img = el("img");
+      img.src = o.zdjecie; img.alt = o.tytul; img.loading = "lazy";
+      zdj.append(img);
+    } else {
+      zdj.append(el("span", null, "Tu będzie zdjęcie z aukcji"));
+    }
+    const znaczki = el("div", "znaczki");
+    if (o.przyklad) znaczki.append(el("span", "znaczek", "Przykład"));
+    if (o.latwaSprzedaz) znaczki.append(el("span", "znaczek latwa", "Łatwa sprzedaż"));
+    zdj.append(znaczki);
+
+    const tresc = el("div", "tresc");
+    tresc.append(el("div", "kategoria", nazwyKategorii[o.kategoria] || ""));
+    tresc.append(el("h2", "tytul", o.tytul));
+
+    const ceny = el("div", "ceny");
+    ceny.append(el("span", "cena", zl(o.cena)));
+    if (o.cenaRynkowa) {
+      ceny.append(el("span", "cena-rynkowa", "zwykle ok. " + zl(o.cenaRynkowa)));
+      const procent = Math.round((1 - o.cena / o.cenaRynkowa) * 100);
+      if (procent > 0) ceny.append(el("span", "taniej", "−" + procent + "%"));
+    }
+    tresc.append(ceny);
+    tresc.append(el("div", "skad", o.zrodlo + " · " + o.miejsce));
+
+    const a = el("a", "przycisk", "Zobacz ofertę →");
+    a.href = o.link; a.target = "_blank"; a.rel = "noopener noreferrer";
+    tresc.append(a);
+
+    k.append(zdj, tresc);
+    return k;
+  }
+
+  function rysuj() {
+    rysujFiltry();
+    const lista = OKAZJE.filter(o =>
+      (!stan.tylkoLatwe || o.latwaSprzedaz) &&
+      (!stan.kategoria || o.kategoria === stan.kategoria)
+    );
+    const siatka = document.getElementById("siatka");
+    siatka.replaceChildren(...lista.map(karta));
+    if (!lista.length) siatka.append(el("div", "pusto", "Brak okazji dla wybranych filtrów."));
+    document.getElementById("licznik").textContent = "Pokazuję: " + lista.length + " z " + OKAZJE.length;
+  }
+
+  rysuj();
+</script>
+</body>
+</html>
