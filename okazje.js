@@ -1,41 +1,44 @@
 // Lista kategorii i okazji wyświetlanych na stronie.
 // Na razie okazje są PRZYKŁADOWE (wpisane ręcznie, żeby pokazać wygląd).
 
+// Pola kategorii: szukaj = fraza wpisywana w wyszukiwarkę portalu,
+// komornik = dział na portalu licytacji komorniczych, otomoto = dział Otomoto,
+// latwa = kategoria łatwa do sprzedania.
 const GRUPY = [
   {
     nazwa: "Pojazdy",
     kategorie: [
-      { id: "auta-sportowe", nazwa: "Auta sportowe" },
-      { id: "auta-osobowe", nazwa: "Auta osobowe" },
-      { id: "auta-do-pracy", nazwa: "Auta do pracy i transportowe" },
-      { id: "przyczepy", nazwa: "Przyczepy i lawety" },
-      { id: "rowery-elektryczne", nazwa: "Rowery elektryczne" },
+      { id: "auta-sportowe", nazwa: "Auta sportowe", szukaj: "auto sportowe", komornik: "CARS", otomoto: "https://www.otomoto.pl/osobowe", latwa: false },
+      { id: "auta-osobowe", nazwa: "Auta osobowe", szukaj: "samochód osobowy", komornik: "CARS", otomoto: "https://www.otomoto.pl/osobowe", latwa: true },
+      { id: "auta-do-pracy", nazwa: "Auta do pracy i transportowe", szukaj: "samochód dostawczy", komornik: "TRUCKS", otomoto: "https://www.otomoto.pl/dostawcze", latwa: true },
+      { id: "przyczepy", nazwa: "Przyczepy i lawety", szukaj: "laweta przyczepa", komornik: "TRAILERS", otomoto: null, latwa: true },
+      { id: "rowery-elektryczne", nazwa: "Rowery elektryczne", szukaj: "rower elektryczny", komornik: null, otomoto: null, latwa: true },
     ],
   },
   {
     nazwa: "Maszyny i sprzęt do pracy",
     kategorie: [
-      { id: "maszyny", nazwa: "Maszyny (koparki itp.)" },
-      { id: "wozki-widlowe", nazwa: "Wózki widłowe" },
-      { id: "traktorki", nazwa: "Traktorki" },
-      { id: "narzedzia", nazwa: "Narzędzia i agregaty" },
-      { id: "elektronarzedzia", nazwa: "Elektronarzędzia" },
-      { id: "regaly", nazwa: "Regały magazynowe" },
-      { id: "materialy", nazwa: "Materiały do pracy" },
-      { id: "panele", nazwa: "Panele fotowoltaiczne" },
+      { id: "maszyny", nazwa: "Maszyny (koparki itp.)", szukaj: "koparka", komornik: "INDUSTRIAL_MACHINES", otomoto: null, latwa: false },
+      { id: "wozki-widlowe", nazwa: "Wózki widłowe", szukaj: "wózek widłowy", komornik: "INDUSTRIAL_MACHINES", otomoto: null, latwa: true },
+      { id: "traktorki", nazwa: "Traktorki", szukaj: "traktorek kosiarka", komornik: "AGRICULTURAL_MACHINERY", otomoto: null, latwa: false },
+      { id: "narzedzia", nazwa: "Narzędzia i agregaty", szukaj: "agregat prądotwórczy", komornik: "OTHER_MOVABLE", otomoto: null, latwa: false },
+      { id: "elektronarzedzia", nazwa: "Elektronarzędzia", szukaj: "elektronarzędzia zestaw", komornik: "OTHER_MOVABLE", otomoto: null, latwa: true },
+      { id: "regaly", nazwa: "Regały magazynowe", szukaj: "regały magazynowe paletowe", komornik: "OTHER_MOVABLE", otomoto: null, latwa: false },
+      { id: "materialy", nazwa: "Materiały do pracy", szukaj: "materiały budowlane", komornik: "INDUSTRIAL_MATERIALS", otomoto: null, latwa: false },
+      { id: "panele", nazwa: "Panele fotowoltaiczne", szukaj: "panele fotowoltaiczne", komornik: "OTHER_MOVABLE", otomoto: null, latwa: false },
     ],
   },
   {
     nazwa: "Elektronika",
     kategorie: [
-      { id: "karty-graficzne", nazwa: "Karty graficzne" },
-      { id: "ram", nazwa: "Pamięci RAM" },
-      { id: "ssd", nazwa: "Dyski SSD" },
-      { id: "procesory", nazwa: "Procesory" },
-      { id: "serwery", nazwa: "Serwery" },
-      { id: "komputery", nazwa: "Komputery" },
-      { id: "monitory", nazwa: "Monitory" },
-      { id: "siec", nazwa: "Sprzęt sieciowy" },
+      { id: "karty-graficzne", nazwa: "Karty graficzne", szukaj: "karta graficzna", komornik: "COMPUTER", otomoto: null, latwa: true },
+      { id: "ram", nazwa: "Pamięci RAM", szukaj: "pamięć RAM", komornik: "COMPUTER", otomoto: null, latwa: true },
+      { id: "ssd", nazwa: "Dyski SSD", szukaj: "dysk SSD", komornik: "COMPUTER", otomoto: null, latwa: true },
+      { id: "procesory", nazwa: "Procesory", szukaj: "procesor", komornik: "COMPUTER", otomoto: null, latwa: true },
+      { id: "serwery", nazwa: "Serwery", szukaj: "serwer", komornik: "COMPUTER", otomoto: null, latwa: false },
+      { id: "komputery", nazwa: "Komputery", szukaj: "komputer", komornik: "COMPUTER", otomoto: null, latwa: true },
+      { id: "monitory", nazwa: "Monitory", szukaj: "monitor", komornik: "COMPUTER", otomoto: null, latwa: true },
+      { id: "siec", nazwa: "Sprzęt sieciowy", szukaj: "switch router", komornik: "COMPUTER", otomoto: null, latwa: true },
     ],
   },
 ];
